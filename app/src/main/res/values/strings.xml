@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Singularity Attendance</string>
     <string name="empty_list_text">Please wait</string>
+    <string name="retrofit_request_fail">Request unsuccessful</string>
+    <string name="api_handler_error">Unknown error occurred. Please try later.</string>
+    <string name="api_failure_txt">Failure</string>
 </resources>
