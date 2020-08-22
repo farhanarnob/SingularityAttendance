@@ -1,4 +1,4 @@
-package com.farhanarnob.singularityattendance.ui.main;
+package com.farhanarnob.singularityattendance.network.room;
 
 import androidx.lifecycle.ViewModel;
 
