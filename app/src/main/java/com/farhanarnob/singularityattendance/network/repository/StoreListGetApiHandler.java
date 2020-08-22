@@ -1,6 +1,7 @@
 package com.farhanarnob.singularityattendance.network.repository;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import com.farhanarnob.singularityattendance.R;
 import com.farhanarnob.singularityattendance.network.retrofit.APICallHandler;
@@ -9,11 +10,15 @@ import com.farhanarnob.singularityattendance.network.retrofit.APIHandler;
 import com.farhanarnob.singularityattendance.network.retrofit.error_handler.ApiErrorHandler;
 import com.farhanarnob.singularityattendance.network.retrofit.error_handler.RetrofitErrorResponse;
 import com.farhanarnob.singularityattendance.network.room.DataModel;
+import com.farhanarnob.singularityattendance.network.room.DataRoomDatabase;
+import com.farhanarnob.singularityattendance.network.room.StoreDao;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -72,10 +77,36 @@ public class StoreListGetApiHandler extends APICallHandler<Long> {
                 Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
                 try {
                     JSONObject jsonObject = new JSONObject(response.toString());
-                    if (jsonObject.getBoolean(DATA)) {
-                        final String storeListString = jsonObject.getString(DATA);
+                    if (jsonObject.getJSONArray(DATA)!=null) {
+                        final JSONArray storeListArray = jsonObject.getJSONArray(DATA);
                         Type userListType = new TypeToken<ArrayList<DataModel>>(){}.getType();
-                        gson.fromJson(storeListString,userListType);
+                        new AsyncTask<Void,Void,Boolean>(){
+
+                            @Override
+                            protected Boolean doInBackground(Void... voids) {
+                                StoreDao storeDao = DataRoomDatabase.getDatabase(context)
+                                        .storeDao();
+                                for (int i = 0; i < storeListArray.length(); i++){
+                                    try {
+                                        DataModel dataModel = new DataModel();
+                                        dataModel.setId((storeListArray
+                                                .getJSONObject(i)).getInt("id"));
+                                        dataModel.setName((storeListArray
+                                                .getJSONObject(i)).getString("name"));
+                                        dataModel.setAddress((storeListArray
+                                                .getJSONObject(i)).getString("address"));
+
+                                        storeDao.insert(dataModel);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                        databaseFailure(e);
+                                    }
+
+                                }
+                                return true;
+                            }
+
+                        }.execute();
                         if (successFlag) successCallBack();
                     } else {
                         failureCallBack(context.getString(R.string.api_failure_txt) + "\t" + StoreListGetApiHandler.class.getSimpleName());

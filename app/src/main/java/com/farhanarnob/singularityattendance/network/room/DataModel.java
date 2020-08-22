@@ -1,20 +1,26 @@
 package com.farhanarnob.singularityattendance.network.room;
 
+import com.google.gson.annotations.SerializedName;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "data")
+@Entity(tableName = "DataModel")
 public class DataModel {
     @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "id")
+    @SerializedName("id")
     private int id;
-    @NonNull
     @ColumnInfo(name = "name")
-    String name;
+    @SerializedName("name")
     @NonNull
+    String name;
     @ColumnInfo(name = "address")
+    @SerializedName("address")
+    @NonNull
     String address;
 
     public int getId() {

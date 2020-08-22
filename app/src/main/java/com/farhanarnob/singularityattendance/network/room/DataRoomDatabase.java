@@ -3,10 +3,12 @@ package com.farhanarnob.singularityattendance.network.room;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+@Database(entities = {DataModel.class}, version = 1)
 public abstract class DataRoomDatabase extends RoomDatabase {
     public abstract StoreDao storeDao();
 
@@ -19,7 +21,6 @@ public abstract class DataRoomDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             DataRoomDatabase.class, "store_database")
-                            .addCallback(sRoomDatabaseCallback)
                             .build();
 
                 }
@@ -27,14 +28,4 @@ public abstract class DataRoomDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
-
-    private static Callback sRoomDatabaseCallback =
-            new Callback(){
-
-                @Override
-                public void onOpen (@NonNull SupportSQLiteDatabase db){
-                    super.onOpen(db);
-                    new PopulateDBAsync(INSTANCE).execute();
-                }
-            };
 }
